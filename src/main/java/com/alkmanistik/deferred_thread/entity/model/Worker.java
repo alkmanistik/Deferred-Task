@@ -1,15 +1,14 @@
-package com.alkmanistik.deferred_thread.service;
+package com.alkmanistik.deferred_thread.entity.model;
 
 import com.alkmanistik.deferred_thread.entity.TaskEntity;
 import com.alkmanistik.deferred_thread.entity.enums.TaskStatus;
-import com.alkmanistik.deferred_thread.entity.model.RetryPolicyParam;
-import com.alkmanistik.deferred_thread.entity.model.WorkerParams;
 import com.alkmanistik.deferred_thread.repository.TaskRepository;
 import com.alkmanistik.deferred_thread.task.EmailProcessingTask;
 import com.alkmanistik.deferred_thread.task.Task;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class Worker {
     private final WorkerParams workerParams;
     private final RetryPolicyParam retryPolicyParam;
@@ -63,6 +63,9 @@ public class Worker {
         while (running) {
             try {
                 List<TaskEntity> tasks = fetchTasks();
+                tasks.forEach(task ->
+                        log.info(String.valueOf(task.getId()))
+                );
 
                 if (tasks.isEmpty()) {
                     Thread.sleep(1000);
@@ -96,7 +99,8 @@ public class Worker {
         try {
             Map<String, Object> params = objectMapper.readValue(
                     task.getTaskParamsJson(),
-                    new TypeReference<HashMap<String, Object>>() {});
+                    new TypeReference<HashMap<String, Object>>() {
+                    });
 
             Class<?> taskClass = Class.forName(task.getTaskClassName());
             Task taskInstance;

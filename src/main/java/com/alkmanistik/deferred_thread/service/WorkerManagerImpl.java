@@ -1,6 +1,7 @@
 package com.alkmanistik.deferred_thread.service;
 
 import com.alkmanistik.deferred_thread.entity.model.RetryPolicyParam;
+import com.alkmanistik.deferred_thread.entity.model.Worker;
 import com.alkmanistik.deferred_thread.entity.model.WorkerParams;
 import com.alkmanistik.deferred_thread.repository.TaskRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
