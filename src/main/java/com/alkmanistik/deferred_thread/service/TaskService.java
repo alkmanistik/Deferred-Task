@@ -1,5 +1,6 @@
 package com.alkmanistik.deferred_thread.service;
 
+import com.alkmanistik.deferred_thread.exception.TaskCancellationException;
 import com.alkmanistik.deferred_thread.request.ScheduleTaskRequest;
 import com.alkmanistik.deferred_thread.request.TaskCancelRequest;
 import com.alkmanistik.deferred_thread.response.TaskResponse;
