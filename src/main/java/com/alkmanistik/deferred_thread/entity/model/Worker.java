@@ -4,6 +4,7 @@ import com.alkmanistik.deferred_thread.entity.TaskEntity;
 import com.alkmanistik.deferred_thread.entity.enums.TaskStatus;
 import com.alkmanistik.deferred_thread.repository.TaskRepository;
 import com.alkmanistik.deferred_thread.task.EmailProcessingTask;
+import com.alkmanistik.deferred_thread.task.ImageProcessingTask;
 import com.alkmanistik.deferred_thread.task.Task;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,9 +15,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @Slf4j
 public class Worker {
@@ -35,12 +34,49 @@ public class Worker {
         this.objectMapper = objectMapper;
     }
 
+    private final BlockingQueue<TaskEntity> taskQueue = new LinkedBlockingQueue<>();
+
     public void start() {
         this.running = true;
         this.executorService = Executors.newFixedThreadPool(workerParams.getThreadNumber());
 
+        executorService.submit(this::fetchAndQueueTasks);
+
         for (int i = 0; i < workerParams.getThreadNumber(); i++) {
-            executorService.submit(this::processTasks);
+            executorService.submit(this::processTaskFromQueue);
+        }
+    }
+
+    private void fetchAndQueueTasks() {
+        while (running) {
+            try {
+                List<TaskEntity> tasks = fetchTasks();
+                for (TaskEntity task : tasks) {
+                    taskQueue.put(task);
+                }
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void processTaskFromQueue() {
+        while (running) {
+            try {
+                TaskEntity task = taskQueue.poll(1, TimeUnit.SECONDS);
+                if (task != null) {
+                    processTask(task);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -55,31 +91,6 @@ public class Worker {
             } catch (InterruptedException e) {
                 executorService.shutdownNow();
                 Thread.currentThread().interrupt();
-            }
-        }
-    }
-
-    private void processTasks() {
-        while (running) {
-            try {
-                List<TaskEntity> tasks = fetchTasks();
-                tasks.forEach(task ->
-                        log.info(String.valueOf(task.getId()))
-                );
-
-                if (tasks.isEmpty()) {
-                    Thread.sleep(1000);
-                    continue;
-                }
-
-                for (TaskEntity task : tasks) {
-                    processTask(task);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
@@ -102,11 +113,16 @@ public class Worker {
                     new TypeReference<HashMap<String, Object>>() {
                     });
 
+            task.setStatus(TaskStatus.IN_PROGRESS);
+            taskRepository.save(task);
+
             Class<?> taskClass = Class.forName(task.getTaskClassName());
             Task taskInstance;
 
             if (EmailProcessingTask.class.isAssignableFrom(taskClass)) {
                 taskInstance = new EmailProcessingTask(params);
+            } else if (ImageProcessingTask.class.isAssignableFrom(taskClass)) {
+                taskInstance = new ImageProcessingTask(params);
             } else {
                 taskInstance = (Task) taskClass.getConstructor(Map.class).newInstance(params);
             }

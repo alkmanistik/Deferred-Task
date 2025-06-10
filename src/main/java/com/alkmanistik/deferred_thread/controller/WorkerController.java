@@ -16,7 +16,7 @@ public class WorkerController {
     private final WorkerManager workerManager;
 
     @PostMapping("/start")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public String startWorker(@RequestBody StartWorkerRequest request) {
         WorkerParams workerParams = new WorkerParams(
                 request.getCategory(),
@@ -32,7 +32,7 @@ public class WorkerController {
     }
 
     @PostMapping("/stop/{category}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public String stopWorker(@PathVariable String category) {
         workerManager.destroy(category);
         return String.format("Worker for category '%s' stopped", category);

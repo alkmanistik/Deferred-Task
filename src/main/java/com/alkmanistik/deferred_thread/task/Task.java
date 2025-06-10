@@ -22,7 +22,7 @@ public class Task implements Runnable {
 
     protected void execute(Map<String, Object> params) throws InterruptedException {
         System.out.println("Task started with params: " + params);
-        Thread.sleep(1000); // Имитация длительной работы (1 секунда)
+        Thread.sleep(1000);
         System.out.println("Task completed: " + params);
     }
 

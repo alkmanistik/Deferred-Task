@@ -24,7 +24,6 @@ public class TaskManagerImpl implements TaskManager {
     @Override
     public long schedule(String category, Class<Task> clazz,
                          Map<String, Object> params, LocalDateTime time) {
-        // Создаем и сохраняем задачу в БД
         TaskEntity task = new TaskEntity();
         task.setCategory(category);
         task.setTaskClassName(clazz.getName());
