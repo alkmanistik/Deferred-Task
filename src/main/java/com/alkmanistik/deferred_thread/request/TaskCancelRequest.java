@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskParamsRequest {
+public class TaskCancelRequest {
 
-
+    private String category;
 
 }

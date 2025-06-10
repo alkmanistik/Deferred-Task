@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -13,6 +14,6 @@ import java.time.LocalDateTime;
 public class ScheduleTaskRequest {
     private String category;
     private String taskClassName;
-    private TaskParamsRequest taskParams;
+    private Map<String, Object> taskParams;
     private LocalDateTime scheduledTime;
 }

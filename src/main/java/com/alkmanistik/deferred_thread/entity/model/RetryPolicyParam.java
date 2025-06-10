@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RetryPolicyParam {
 
+    private int retryCount;
+
 }
