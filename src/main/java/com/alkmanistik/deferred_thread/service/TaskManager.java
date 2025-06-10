@@ -1,4 +1,4 @@
-package com.alkmanistik.deferred_thread.manager;
+package com.alkmanistik.deferred_thread.service;
 
 import java.time.LocalDateTime;
 
