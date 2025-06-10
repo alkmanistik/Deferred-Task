@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WorkerParams {
 
+    private String category;
     private int threadNumber;
     private int tasksNumber;
 

@@ -1,42 +1,43 @@
 package com.alkmanistik.deferred_thread.service;
 
-import com.alkmanistik.deferred_thread.entity.TaskEntity;
 import com.alkmanistik.deferred_thread.entity.model.RetryPolicyParam;
 import com.alkmanistik.deferred_thread.entity.model.WorkerParams;
 import com.alkmanistik.deferred_thread.repository.TaskRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
+
+@Component
 @RequiredArgsConstructor
 public class WorkerManagerImpl implements WorkerManager {
-
-    private final Map<String, Map<Long, TaskEntity>> workerContexts = new ConcurrentHashMap();
+    private final Map<String, Worker> workers = new ConcurrentHashMap<>();
+    private final Object lock = new Object();
     private final TaskRepository taskRepository;
-    private final ApplicationContext applicationContext;
     private final ObjectMapper objectMapper;
-
-    private WorkerParams workerParams;
-    private RetryPolicyParam retryPolicyParam;
-
 
     @Override
     public void init(WorkerParams workerParams, RetryPolicyParam retryParams) {
-        this.workerParams = workerParams;
-        this.retryPolicyParam = retryParams;
+        synchronized (lock) {
+            String category = workerParams.getCategory();
+            if (!workers.containsKey(category)) {
+                Worker worker = new Worker(workerParams, retryParams, taskRepository, objectMapper);
+                workers.put(category, worker);
+                worker.start();
+            }
+        }
     }
 
     @Override
     public void destroy(String category) {
-        workerContexts.remove(category);
+        synchronized (lock) {
+            Worker worker = workers.remove(category);
+            if (worker != null) {
+                worker.stop();
+            }
+        }
     }
-
 }
