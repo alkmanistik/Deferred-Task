@@ -32,6 +32,7 @@ public class Worker {
         this.retryPolicyParam = retryPolicyParam;
         this.taskRepository = taskRepository;
         this.objectMapper = objectMapper;
+        this.workerParams.setThreadNumber(workerParams.getThreadNumber() + 1);
     }
 
     private final BlockingQueue<TaskEntity> taskQueue = new LinkedBlockingQueue<>();

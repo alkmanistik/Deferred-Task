@@ -4,6 +4,7 @@ import com.alkmanistik.deferred_thread.entity.model.RetryPolicyParam;
 import com.alkmanistik.deferred_thread.entity.model.WorkerParams;
 import com.alkmanistik.deferred_thread.request.StartWorkerRequest;
 import com.alkmanistik.deferred_thread.service.WorkerManager;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class WorkerController {
 
     @PostMapping("/start")
     @ResponseStatus(HttpStatus.OK)
-    public String startWorker(@RequestBody StartWorkerRequest request) {
+    public String startWorker(@Valid @RequestBody StartWorkerRequest request) {
         WorkerParams workerParams = new WorkerParams(
                 request.getCategory(),
                 request.getThreadNumber(),
@@ -33,7 +34,7 @@ public class WorkerController {
 
     @PostMapping("/stop/{category}")
     @ResponseStatus(HttpStatus.OK)
-    public String stopWorker(@PathVariable String category) {
+    public String stopWorker(@Valid @PathVariable String category) {
         workerManager.destroy(category);
         return String.format("Worker for category '%s' stopped", category);
     }
