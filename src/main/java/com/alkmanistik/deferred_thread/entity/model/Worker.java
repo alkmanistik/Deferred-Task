@@ -147,6 +147,7 @@ public class Worker {
                 return true;
             } catch (Exception e) {
                 attempts++;
+                log.info(e.getMessage());
                 if (attempts > retryPolicyParam.getRetryCount()) {
                     return false;
                 }
