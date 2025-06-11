@@ -1,7 +1,7 @@
 package com.alkmanistik.deferred_thread.service;
 
-import com.alkmanistik.deferred_thread.entity.model.RetryPolicyParam;
-import com.alkmanistik.deferred_thread.entity.model.WorkerParams;
+import com.alkmanistik.deferred_thread.data.model.RetryPolicyParam;
+import com.alkmanistik.deferred_thread.data.model.WorkerParams;
 
 public interface WorkerManager {
 

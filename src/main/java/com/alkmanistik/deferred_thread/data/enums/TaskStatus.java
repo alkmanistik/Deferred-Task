@@ -1,4 +1,4 @@
-package com.alkmanistik.deferred_thread.entity.enums;
+package com.alkmanistik.deferred_thread.data.enums;
 
 public enum TaskStatus {
     SCHEDULED,

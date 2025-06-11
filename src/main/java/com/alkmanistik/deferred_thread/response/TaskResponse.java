@@ -1,6 +1,6 @@
 package com.alkmanistik.deferred_thread.response;
 
-import com.alkmanistik.deferred_thread.entity.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

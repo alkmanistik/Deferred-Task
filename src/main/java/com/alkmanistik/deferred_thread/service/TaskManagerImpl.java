@@ -1,9 +1,9 @@
 package com.alkmanistik.deferred_thread.service;
 
-import com.alkmanistik.deferred_thread.entity.TaskEntity;
-import com.alkmanistik.deferred_thread.entity.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.data.entity.TaskEntity;
+import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
 import com.alkmanistik.deferred_thread.exception.TaskSerializationException;
-import com.alkmanistik.deferred_thread.repository.TaskRepository;
+import com.alkmanistik.deferred_thread.repository.CustomTaskRepository;
 import com.alkmanistik.deferred_thread.task.Task;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TaskManagerImpl implements TaskManager {
 
-    private final TaskRepository taskRepository;
-    private final WorkerManager workerManager;
+    private final CustomTaskRepository customTaskRepository;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -33,24 +32,12 @@ public class TaskManagerImpl implements TaskManager {
         task.setCreatedAt(LocalDateTime.now());
         task.setUpdatedAt(LocalDateTime.now());
 
-        TaskEntity savedTask = taskRepository.save(task);
-
-        return savedTask.getId();
+        return customTaskRepository.insert(task);
     }
 
     @Override
     public boolean cancel(String category, long taskId) {
-        return taskRepository.findById(taskId)
-                .map(task -> {
-                    if (task.getStatus() == TaskStatus.SCHEDULED) {
-                        task.setStatus(TaskStatus.CANCELLED);
-                        task.setUpdatedAt(LocalDateTime.now());
-                        taskRepository.save(task);
-                        return true;
-                    }
-                    return false;
-                })
-                .orElse(false);
+        return customTaskRepository.cancel(category, taskId);
     }
 
     private String serializeParams(Map<String, Object> params) {

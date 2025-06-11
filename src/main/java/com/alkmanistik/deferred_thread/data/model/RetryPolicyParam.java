@@ -1,4 +1,4 @@
-package com.alkmanistik.deferred_thread.entity.model;
+package com.alkmanistik.deferred_thread.data.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

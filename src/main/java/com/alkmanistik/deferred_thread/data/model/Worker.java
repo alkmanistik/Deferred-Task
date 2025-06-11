@@ -1,8 +1,8 @@
-package com.alkmanistik.deferred_thread.entity.model;
+package com.alkmanistik.deferred_thread.data.model;
 
-import com.alkmanistik.deferred_thread.entity.TaskEntity;
-import com.alkmanistik.deferred_thread.entity.enums.TaskStatus;
-import com.alkmanistik.deferred_thread.repository.TaskRepository;
+import com.alkmanistik.deferred_thread.data.entity.TaskEntity;
+import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.repository.CustomTaskRepository;
 import com.alkmanistik.deferred_thread.task.EmailProcessingTask;
 import com.alkmanistik.deferred_thread.task.ImageProcessingTask;
 import com.alkmanistik.deferred_thread.task.Task;
@@ -21,17 +21,16 @@ import java.util.concurrent.*;
 public class Worker {
     private final WorkerParams workerParams;
     private final RetryPolicyParam retryPolicyParam;
-    private final TaskRepository taskRepository;
     private final ObjectMapper objectMapper;
+    private final CustomTaskRepository customTaskRepository;
     private ExecutorService executorService;
     private volatile boolean running;
 
-    public Worker(WorkerParams workerParams, RetryPolicyParam retryPolicyParam,
-                  TaskRepository taskRepository, ObjectMapper objectMapper) {
+    public Worker(WorkerParams workerParams, RetryPolicyParam retryPolicyParam, ObjectMapper objectMapper, CustomTaskRepository customTaskRepository) {
         this.workerParams = workerParams;
         this.retryPolicyParam = retryPolicyParam;
-        this.taskRepository = taskRepository;
         this.objectMapper = objectMapper;
+        this.customTaskRepository = customTaskRepository;
         this.workerParams.setThreadNumber(workerParams.getThreadNumber() + 1);
     }
 
@@ -54,7 +53,7 @@ public class Worker {
                 List<TaskEntity> tasks = fetchTasks();
                 for (TaskEntity task : tasks) {
                     task.setStatus(TaskStatus.IN_PROGRESS);
-                    taskRepository.save(task);
+                    customTaskRepository.save(task);
                     taskQueue.put(task);
                 }
                 Thread.sleep(1000);
@@ -101,31 +100,19 @@ public class Worker {
     @Transactional
     protected List<TaskEntity> fetchTasks() {
         LocalDateTime now = LocalDateTime.now();
-        return taskRepository.findDeferred(
-                workerParams.getCategory(),
-                TaskStatus.SCHEDULED,
-                now,
-                workerParams.getTasksNumber());
+        return customTaskRepository.findDeferred(workerParams.getCategory(), TaskStatus.SCHEDULED, now, workerParams.getTasksNumber());
     }
 
     @SuppressWarnings("unchecked")
     private void processTask(TaskEntity task) {
         try {
-            Map<String, Object> params = objectMapper.readValue(
-                    task.getTaskParamsJson(),
-                    new TypeReference<HashMap<String, Object>>() {
-                    });
+            Map<String, Object> params = objectMapper.readValue(task.getTaskParamsJson(), new TypeReference<HashMap<String, Object>>() {
+            });
 
             Class<?> taskClass = Class.forName(task.getTaskClassName());
             Task taskInstance;
 
-            if (EmailProcessingTask.class.isAssignableFrom(taskClass)) {
-                taskInstance = new EmailProcessingTask(params);
-            } else if (ImageProcessingTask.class.isAssignableFrom(taskClass)) {
-                taskInstance = new ImageProcessingTask(params);
-            } else {
-                taskInstance = (Task) taskClass.getConstructor(Map.class).newInstance(params);
-            }
+            taskInstance = (Task) taskClass.getConstructor(Map.class).newInstance(params);
 
             boolean success = executeWithRetries(taskInstance, task);
 
@@ -135,7 +122,7 @@ public class Worker {
             e.printStackTrace();
         } finally {
             task.setUpdatedAt(LocalDateTime.now());
-            taskRepository.save(task);
+            customTaskRepository.save(task);
         }
     }
 

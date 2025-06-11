@@ -1,6 +1,6 @@
-package com.alkmanistik.deferred_thread.entity;
+package com.alkmanistik.deferred_thread.data.entity;
 
-import com.alkmanistik.deferred_thread.entity.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "scheduled_tasks")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
