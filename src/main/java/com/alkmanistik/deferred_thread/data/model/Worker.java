@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,7 @@ public class Worker {
     private void processTaskFromQueue() {
         while (running) {
             try {
-                TaskEntity task = taskQueue.poll(500, TimeUnit.MILLISECONDS);
+                TaskEntity task = taskQueue.poll(1000, TimeUnit.MILLISECONDS);
                 if (task != null) {
                     processTask(task);
                 }
@@ -114,38 +115,66 @@ public class Worker {
 
             taskInstance = (Task) taskClass.getConstructor(Map.class).newInstance(params);
 
-            boolean success = executeWithRetries(taskInstance, task);
+            boolean success = executeTask(taskInstance, task);
 
-            task.setStatus(success ? TaskStatus.COMPLETED : TaskStatus.FAILED);
+            if (!success) {
+                handleFailedTask(task);
+                return;
+            }
+
+            task.setStatus(TaskStatus.COMPLETED);
         } catch (Exception e) {
+            log.error("Task processing failed", e);
             task.setStatus(TaskStatus.FAILED);
-            e.printStackTrace();
+            handleFailedTask(task);
         } finally {
             task.setUpdatedAt(LocalDateTime.now());
             customTaskRepository.save(task);
         }
     }
 
-    private boolean executeWithRetries(Task task, TaskEntity taskEntity) {
-        int attempts = 0;
-        while (attempts <= retryPolicyParam.getRetryCount()) {
-            try {
-                task.run();
-                return true;
-            } catch (Exception e) {
-                attempts++;
-                log.info(e.getMessage());
-                if (attempts > retryPolicyParam.getRetryCount()) {
-                    return false;
-                }
-                try {
-                    Thread.sleep((long) Math.pow(2, attempts) * 1000);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return false;
-                }
-            }
+    private boolean executeTask(Task task, TaskEntity taskEntity) {
+        try {
+            task.run();
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return false;
         }
-        return false;
+        return true;
     }
+
+    private void handleFailedTask(TaskEntity task) {
+        if (task.getRetryCount() < retryPolicyParam.getRetryCount()) {
+            scheduleRetry(task);
+        } else {
+            task.setStatus(TaskStatus.FAILED);
+        }
+    }
+
+    private void scheduleRetry(TaskEntity task) {
+        int nextRetryCount = task.getRetryCount() + 1;
+        Duration delay = calculateRetryDelay(nextRetryCount);
+
+        TaskEntity retryTask = new TaskEntity();
+        retryTask.setCategory(task.getCategory());
+        retryTask.setTaskClassName(task.getTaskClassName());
+        retryTask.setTaskParamsJson(task.getTaskParamsJson());
+        retryTask.setScheduledTime(LocalDateTime.now().plus(delay));
+        retryTask.setRetryCount(nextRetryCount);
+        retryTask.setStatus(TaskStatus.SCHEDULED);
+
+        customTaskRepository.save(retryTask);
+        task.setStatus(TaskStatus.FAILED);
+    }
+
+    private Duration calculateRetryDelay(int retryAttempt) {
+        // y = min(a^x, maxDelay)
+        double delaySeconds = Math.pow(retryPolicyParam.getRetryTime(), retryAttempt);
+        Duration calculatedDelay = Duration.ofSeconds((long) delaySeconds);
+
+        return calculatedDelay.compareTo(retryPolicyParam.getMaxDelay()) > 0
+                ? retryPolicyParam.getMaxDelay()
+                : calculatedDelay;
+    }
+
 }

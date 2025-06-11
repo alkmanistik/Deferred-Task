@@ -22,6 +22,7 @@ public class TaskEntity {
     private String taskParamsJson;
     private LocalDateTime scheduledTime;
     private TaskStatus status;
+    private int retryCount = 0;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

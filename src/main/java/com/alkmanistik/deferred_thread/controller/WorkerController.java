@@ -25,7 +25,11 @@ public class WorkerController {
                 request.getTasksNumber()
         );
 
-        RetryPolicyParam retryPolicy = new RetryPolicyParam(request.getRetryCount());
+        RetryPolicyParam retryPolicy = new RetryPolicyParam(
+                request.getRetryBase(),
+                request.getRetryCount(),
+                request.getMaxRetryDelay()
+        );
 
         workerManager.init(workerParams, retryPolicy);
         return String.format("Worker for category '%s' started with %d threads",
