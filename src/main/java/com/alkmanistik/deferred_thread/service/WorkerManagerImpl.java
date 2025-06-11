@@ -5,6 +5,7 @@ import com.alkmanistik.deferred_thread.entity.model.Worker;
 import com.alkmanistik.deferred_thread.entity.model.WorkerParams;
 import com.alkmanistik.deferred_thread.repository.TaskRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -41,4 +42,10 @@ public class WorkerManagerImpl implements WorkerManager {
             }
         }
     }
+
+    @PreDestroy
+    public void destroyAll() {
+        workers.keySet().forEach(this::destroy);
+    }
+
 }

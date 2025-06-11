@@ -52,6 +52,8 @@ public class Worker {
             try {
                 List<TaskEntity> tasks = fetchTasks();
                 for (TaskEntity task : tasks) {
+                    task.setStatus(TaskStatus.IN_PROGRESS);
+                    taskRepository.save(task);
                     taskQueue.put(task);
                 }
                 Thread.sleep(1000);
@@ -67,7 +69,7 @@ public class Worker {
     private void processTaskFromQueue() {
         while (running) {
             try {
-                TaskEntity task = taskQueue.poll(1, TimeUnit.SECONDS);
+                TaskEntity task = taskQueue.poll(500, TimeUnit.MILLISECONDS);
                 if (task != null) {
                     processTask(task);
                 }
@@ -112,9 +114,6 @@ public class Worker {
                     task.getTaskParamsJson(),
                     new TypeReference<HashMap<String, Object>>() {
                     });
-
-            task.setStatus(TaskStatus.IN_PROGRESS);
-            taskRepository.save(task);
 
             Class<?> taskClass = Class.forName(task.getTaskClassName());
             Task taskInstance;
