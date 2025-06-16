@@ -1,7 +1,10 @@
 package com.alkmanistik.deferred_thread.task;
 
+import com.alkmanistik.deferred_thread.data.anotation.TaskParams;
+
 import java.util.Map;
 
+@TaskParams(required = {"email", "message"})
 public class EmailProcessingTask  extends Task {
     public EmailProcessingTask(String email, String message) {
         super(Map.of(

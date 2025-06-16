@@ -1,7 +1,10 @@
 package com.alkmanistik.deferred_thread.task;
 
+import com.alkmanistik.deferred_thread.data.anotation.TaskParams;
+
 import java.util.Map;
 
+@TaskParams(required = {"imagePath", "width", "height"})
 public class ImageProcessingTask extends Task {
     public ImageProcessingTask(String imagePath, int width, int height) {
         super(Map.of(

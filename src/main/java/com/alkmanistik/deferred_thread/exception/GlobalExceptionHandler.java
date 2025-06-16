@@ -38,6 +38,10 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
-
+    @ExceptionHandler(TaskParameterValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleTaskParameterValidationException(TaskParameterValidationException ex) {
+        return ex.getMessage();
+    }
 
 }
