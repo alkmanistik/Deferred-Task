@@ -6,12 +6,6 @@ import java.util.Map;
 
 @TaskParams(required = {"email", "message"})
 public class EmailProcessingTask  extends Task {
-    public EmailProcessingTask(String email, String message) {
-        super(Map.of(
-                "email", email,
-                "message", message
-        ));
-    }
 
     public EmailProcessingTask(Map<String, Object> map) {
         super(map);
@@ -24,6 +18,6 @@ public class EmailProcessingTask  extends Task {
         if(randomValue==0){
             throw new RuntimeException("Email could not be sent: " + params.get("email"));
         }
-        System.out.println("Processing email: " + params.get("email"));
+        System.out.println("Processing email: " + params.get("email") + "with message: " + params.get("message"));
     }
 }
