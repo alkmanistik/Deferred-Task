@@ -67,6 +67,7 @@ DB_NAME=
     - entity # Сущности базы данных
     - model # Модели данных (DTO)
     - enums # Перечисления
+    - anotation # Аннотации
 - exception # Кастомные исключения
 - repository # Репозитории для работы с БД
 - request # Классы запросов API
