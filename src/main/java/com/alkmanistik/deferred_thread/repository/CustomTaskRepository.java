@@ -34,6 +34,21 @@ public class CustomTaskRepository {
         jdbcTemplate.execute(sql);
     }
 
+    public int resetInProgressTasks(String category) {
+        String tableName = "tasks_" + category.toLowerCase();
+        String sql = "UPDATE " + tableName +
+                " SET status = ?, updated_at = ? " +
+                "WHERE status = ?";
+
+        return jdbcTemplate.update(
+                sql,
+                TaskStatus.SCHEDULED.name(),
+                Timestamp.valueOf(LocalDateTime.now()),
+                TaskStatus.IN_PROGRESS.name()
+        );
+    }
+
+
     public long insert(TaskEntity task) {
         String tableName = "tasks_" + task.getCategory().toLowerCase();
         createTableIfNotExists(task.getCategory());

@@ -3,8 +3,6 @@ package com.alkmanistik.deferred_thread.data.model;
 import com.alkmanistik.deferred_thread.data.entity.TaskEntity;
 import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
 import com.alkmanistik.deferred_thread.repository.CustomTaskRepository;
-import com.alkmanistik.deferred_thread.task.EmailProcessingTask;
-import com.alkmanistik.deferred_thread.task.ImageProcessingTask;
 import com.alkmanistik.deferred_thread.task.Task;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,10 +83,11 @@ public class Worker {
 
     public void stop() {
         this.running = false;
+
         if (executorService != null) {
             executorService.shutdown();
             try {
-                if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                if (!executorService.awaitTermination(4, TimeUnit.SECONDS)) {
                     executorService.shutdownNow();
                 }
             } catch (InterruptedException e) {
@@ -96,9 +95,11 @@ public class Worker {
                 Thread.currentThread().interrupt();
             }
         }
+
+        int resetCount = customTaskRepository.resetInProgressTasks(workerParams.getCategory());
+        log.info("Reset {} IN_PROGRESS tasks to SCHEDULED", resetCount);
     }
 
-    @Transactional
     protected List<TaskEntity> fetchTasks() {
         LocalDateTime now = LocalDateTime.now();
         return customTaskRepository.findDeferred(workerParams.getCategory(), TaskStatus.SCHEDULED, now, workerParams.getTasksNumber());

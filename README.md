@@ -29,9 +29,10 @@ REST API for scheduling and processing deferred tasks with configurable worker p
 ```
 {
     "category": "email",
-    "threadNumber": 3,
+    "threadNumber": 2,
     "tasksNumber": 5,
-    "retryCount": 3
+    "retryCount": 2,
+    "retryBase": 4.0
 }
 ```
 ### 3. Stop Worker
