@@ -6,7 +6,6 @@ import com.alkmanistik.deferred_thread.repository.CustomTaskRepository;
 import com.alkmanistik.deferred_thread.task.Task;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
@@ -60,7 +59,7 @@ public class Worker {
                 Thread.currentThread().interrupt();
                 break;
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Error fetching tasks", e);
             }
         }
     }
@@ -76,7 +75,7 @@ public class Worker {
                 Thread.currentThread().interrupt();
                 break;
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Error fetching tasks", e);
             }
         }
     }
@@ -105,7 +104,6 @@ public class Worker {
         return customTaskRepository.findDeferred(workerParams.getCategory(), TaskStatus.SCHEDULED, now, workerParams.getTasksNumber());
     }
 
-    @SuppressWarnings("unchecked")
     private void processTask(TaskEntity task) {
         try {
             Map<String, Object> params = objectMapper.readValue(task.getTaskParamsJson(), new TypeReference<HashMap<String, Object>>() {

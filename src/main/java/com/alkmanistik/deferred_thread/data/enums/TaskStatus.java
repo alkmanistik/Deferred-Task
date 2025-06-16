@@ -5,6 +5,5 @@ public enum TaskStatus {
     IN_PROGRESS,
     COMPLETED,
     FAILED,
-    CANCELLED,
-    RETRY_PENDING
+    CANCELLED
 }
