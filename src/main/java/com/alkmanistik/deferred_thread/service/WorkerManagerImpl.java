@@ -3,6 +3,8 @@ package com.alkmanistik.deferred_thread.service;
 import com.alkmanistik.deferred_thread.data.model.RetryPolicyParam;
 import com.alkmanistik.deferred_thread.data.model.Worker;
 import com.alkmanistik.deferred_thread.data.model.WorkerParams;
+import com.alkmanistik.deferred_thread.exception.WorkerAlreadyExist;
+import com.alkmanistik.deferred_thread.exception.WorkerNotFound;
 import com.alkmanistik.deferred_thread.repository.CustomTaskRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PreDestroy;
@@ -30,6 +32,9 @@ public class WorkerManagerImpl implements WorkerManager {
                 workers.put(category, worker);
                 worker.start();
             }
+            else{
+                throw new WorkerAlreadyExist("Worker already exist with category: " + category);
+            }
         }
     }
 
@@ -39,6 +44,9 @@ public class WorkerManagerImpl implements WorkerManager {
             Worker worker = workers.remove(category);
             if (worker != null) {
                 worker.stop();
+            }
+            else{
+                throw new WorkerNotFound("Worker not found with category: " + category);
             }
         }
     }

@@ -1,8 +1,6 @@
 package com.alkmanistik.deferred_thread.exception;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,8 +22,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TaskCancellationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleForbidden(TaskCancellationException ex) {
+    public String handleTaskCancellation(TaskCancellationException ex) {
         return ex.getMessage();
     }
+
+    @ExceptionHandler(WorkerAlreadyExist.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleWorkerAlreadyExist(WorkerAlreadyExist ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(WorkerNotFound.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleWorkerNotFound(WorkerNotFound ex) {
+        return ex.getMessage();
+    }
+
+
 
 }
