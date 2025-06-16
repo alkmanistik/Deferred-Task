@@ -12,10 +12,10 @@ REST API для задач с отложенными вызовами. Сист�
 
 ### Файл переменных окружения (.env)
 ```
-DB_URL=
-DB_PASSWORD=
-DB_USERNAME=
-DB_NAME=
+DB_URL=jdbc:postgresql://localhost:5432/deferredThread
+DB_PASSWORD=/*Поменять на свой*/
+DB_USERNAME=/*Поменять на свой*/
+DB_NAME=deferredThread
 ```
 
 ## Base URL
@@ -83,3 +83,30 @@ DB_NAME=
 - Получает задачи из БД по категории
 - Обрабатывает в многопоточном режиме
 - Поддерживает экспоненциальный бекофф для повторных попыток
+### Задачи
+Пример создания своей собвственной задачи
+```java
+import com.alkmanistik.deferred_thread.data.anotation.TaskParams;
+
+import java.util.Map;
+
+@TaskParams(required = {"firstParam", "secondParam"})
+public class CustomTask extends Task {
+
+    public CustomTask(Map<String, Object> map) {
+        super(map);
+    }
+
+    @Override
+    protected void execute(Map<String, Object> params) throws InterruptedException {
+        // Некоторая логика
+        // Пример работы с параметрами
+        System.out.println(params.get("firstParam") + " " + params.get("secondParam"));
+    }
+
+}
+
+```
+#### Особенности
+- Аннотация TaskParams должны принимать только строгие параметры, которые должны быть 100%.
+- Обязательное наследования из Task
