@@ -82,11 +82,10 @@ public class Worker {
 
     public void stop() {
         this.running = false;
-
         if (executorService != null) {
             executorService.shutdown();
             try {
-                if (!executorService.awaitTermination(4, TimeUnit.SECONDS)) {
+                if (!executorService.awaitTermination(500, TimeUnit.MILLISECONDS)) {
                     executorService.shutdownNow();
                 }
             } catch (InterruptedException e) {
@@ -96,7 +95,9 @@ public class Worker {
         }
 
         int resetCount = customTaskRepository.resetInProgressTasks(workerParams.getCategory());
-        log.info("Reset {} IN_PROGRESS tasks to SCHEDULED", resetCount);
+        if (resetCount!=0){
+            log.info("Reset {} IN_PROGRESS tasks to SCHEDULED", resetCount);
+        }
     }
 
     protected List<TaskEntity> fetchTasks() {
@@ -136,7 +137,7 @@ public class Worker {
         try {
             task.run();
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.error(e.getMessage());
             return false;
         }
         return true;

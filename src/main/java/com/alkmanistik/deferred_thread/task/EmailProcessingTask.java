@@ -18,6 +18,6 @@ public class EmailProcessingTask  extends Task {
         if(randomValue==0){
             throw new RuntimeException("Email could not be sent: " + params.get("email"));
         }
-        System.out.println("Processing email: " + params.get("email") + "with message: " + params.get("message"));
+        System.out.println("Processing email:" + params.get("email") + " with message:" + params.get("message"));
     }
 }

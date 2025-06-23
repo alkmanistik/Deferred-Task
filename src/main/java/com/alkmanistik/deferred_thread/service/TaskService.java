@@ -10,11 +10,13 @@ import com.alkmanistik.deferred_thread.request.TaskCancelRequest;
 import com.alkmanistik.deferred_thread.response.TaskResponse;
 import com.alkmanistik.deferred_thread.task.Task;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TaskService {
 
@@ -34,6 +36,13 @@ public class TaskService {
                     request.getScheduledTime()
             );
 
+            log.info(
+                    "Created task with id={}, category={}, scheduledTime={}",
+                    taskId,
+                    request.getCategory(),
+                    request.getScheduledTime()
+            );
+
             return new TaskResponse(
                     taskId,
                     request.getCategory(),
@@ -42,6 +51,10 @@ public class TaskService {
             );
 
         } catch (ClassNotFoundException e) {
+            log.error(
+                    "Failed to schedule task: class not found={}",
+                    request.getTaskClassName()
+            );
             throw new TaskClassNotFoundException(request.getTaskClassName());
         }
 
@@ -51,7 +64,13 @@ public class TaskService {
     public void cancelTask(Long taskId, TaskCancelRequest request) {
         boolean cancelled = taskManager.cancel(request.getCategory(), taskId);
         if (!cancelled) {
+            log.error(
+                    "Failed to cancel task: class id={}",
+                    taskId
+            );
             throw new TaskCancellationException("Task cannot be cancelled");
+        }else{
+            log.info("Task cancelled with id={}", taskId);
         }
     }
 
