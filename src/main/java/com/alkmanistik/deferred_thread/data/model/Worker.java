@@ -123,6 +123,7 @@ public class Worker {
             }
 
             task.setStatus(TaskStatus.COMPLETED);
+            log.info("Task complete with id={}", task.getId());
         } catch (Exception e) {
             log.error("Task processing failed", e);
             task.setStatus(TaskStatus.FAILED);

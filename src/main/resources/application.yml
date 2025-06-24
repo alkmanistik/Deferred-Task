@@ -12,9 +12,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
-task:
-  worker:
-    thread-number: 5       # Количество потоков воркера
-    tasks-number: 100      # Максимальное количество задач в очереди
-  retry:
-    retry-count: 3         # Количество попыток повтора
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

@@ -19,6 +19,4 @@ public class RetryPolicyParam {
         this.retryCount = retryCount;
     }
 
-
-
 }
