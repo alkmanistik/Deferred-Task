@@ -28,6 +28,9 @@ GRAFANA_PASSWORD=/*Поменять на свой*/
 
 ## 🚀 Точки входа
 
+### URL документации
+`http://localhost:8080/swagger-ui/index.html`
+
 ### 1. TaskController
 Создание задачи
 **Endpoint**: `POST /tasks/schedule`
@@ -51,7 +54,7 @@ GRAFANA_PASSWORD=/*Поменять на свой*/
     "category": "email"
 }
 ```
-### 2 WorkerController
+### 2. WorkerController
 Старт Worker
 **Endpoint**: `POST /workers/start`
 **Body**:
