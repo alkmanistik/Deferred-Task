@@ -1,9 +1,15 @@
 package com.alkmanistik.deferred_thread.exception;
 
+import com.alkmanistik.deferred_thread.response.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -42,6 +48,20 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleTaskParameterValidationException(TaskParameterValidationException ex) {
         return ex.getMessage();
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<List<ValidationErrorResponse>> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        List<ValidationErrorResponse> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> new ValidationErrorResponse(
+                        error.getField(),
+                        error.getDefaultMessage(),
+                        error.getRejectedValue()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }
