@@ -65,12 +65,13 @@ public class TaskService {
         boolean cancelled = taskManager.cancel(request.getCategory(), taskId);
         if (!cancelled) {
             log.error(
-                    "Failed to cancel task: class id={}",
-                    taskId
+                    "Failed to cancel task: class id={} category={}",
+                    taskId,
+                    request.getCategory()
             );
             throw new TaskCancellationException("Task cannot be cancelled");
         }else{
-            log.info("Task cancelled with id={}", taskId);
+            log.info("Task cancelled with id={} category={}", taskId, request.getCategory());
         }
     }
 

@@ -115,7 +115,7 @@ public class Worker {
 
             taskInstance = (Task) taskClass.getConstructor(Map.class).newInstance(params);
 
-            boolean success = executeTask(taskInstance, task);
+            boolean success = executeTask(taskInstance);
 
             if (!success) {
                 handleFailedTask(task);
@@ -123,7 +123,7 @@ public class Worker {
             }
 
             task.setStatus(TaskStatus.COMPLETED);
-            log.info("Task complete with id={}", task.getId());
+            log.info("Task complete with id={}, category={}", task.getId(), task.getCategory());
         } catch (Exception e) {
             log.error("Task processing failed", e);
             task.setStatus(TaskStatus.FAILED);
@@ -134,7 +134,7 @@ public class Worker {
         }
     }
 
-    private boolean executeTask(Task task, TaskEntity taskEntity) {
+    private boolean executeTask(Task task) {
         try {
             task.run();
         } catch (Exception e) {
