@@ -31,7 +31,7 @@ public class TaskController {
         return taskService.scheduleTask(request);
     }
 
-    @PostMapping("/cancel/{taskId}")
+    @PatchMapping("/cancel/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
             summary = "Отмена задачи"
