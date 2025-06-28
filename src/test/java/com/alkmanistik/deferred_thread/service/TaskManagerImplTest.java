@@ -2,7 +2,9 @@ package com.alkmanistik.deferred_thread.service;
 
 import com.alkmanistik.deferred_thread.data.entity.TaskEntity;
 import com.alkmanistik.deferred_thread.repository.CustomTaskRepository;
+import com.alkmanistik.deferred_thread.task.EmailProcessingTask;
 import com.alkmanistik.deferred_thread.task.Task;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +25,9 @@ public class TaskManagerImplTest {
     @Mock
     private CustomTaskRepository taskRepository;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     @InjectMocks
     private TaskManagerImpl taskManager;
 
@@ -30,7 +35,7 @@ public class TaskManagerImplTest {
     void scheduleSuccessful() throws Exception {
 
         String category = "email";
-        Class<? extends Task> taskClass = (Class<? extends Task>) Class.forName("com.alkmanistik.deferred_thread.task.EmailTask");
+        Class<? extends Task> taskClass = EmailProcessingTask.class;
         Map<String, Object> map = Map.of(
                 "email", "erik.fattakhov.02@mail.ru",
                 "message", "Hello"
