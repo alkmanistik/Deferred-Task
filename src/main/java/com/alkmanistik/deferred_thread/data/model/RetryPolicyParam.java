@@ -13,7 +13,7 @@ public class RetryPolicyParam {
 
     private double retryTime = Math.exp(1);
     private int retryCount;
-    private Duration maxDelay = Duration.ofHours(24);
+    private Duration maxDelay = Duration.ofHours(10);
 
     public RetryPolicyParam(int retryCount) {
         this.retryCount = retryCount;
