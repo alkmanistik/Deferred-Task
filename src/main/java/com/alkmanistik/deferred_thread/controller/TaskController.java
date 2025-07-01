@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/tasks")
 @RequiredArgsConstructor
-@Tag(name = "TaskController", description = "Взаимодейсвие с задачами")
+@Tag(name = "TaskController", description = "Взаимодействие с задачами")
 public class TaskController {
 
     private final TaskService taskService;

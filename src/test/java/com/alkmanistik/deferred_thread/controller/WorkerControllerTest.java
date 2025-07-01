@@ -58,9 +58,6 @@ public class WorkerControllerTest {
                 }
                 """;
 
-        String response = String.format("Worker for category '%s' started with %d threads",
-                "email", 3);
-
         mockMvc.perform(post("/api/v1/workers/start")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))

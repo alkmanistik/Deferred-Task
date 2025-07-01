@@ -7,15 +7,11 @@ import com.alkmanistik.deferred_thread.exception.TaskParameterValidationExceptio
 import com.alkmanistik.deferred_thread.request.ScheduleTaskRequest;
 import com.alkmanistik.deferred_thread.request.TaskCancelRequest;
 import com.alkmanistik.deferred_thread.response.TaskResponse;
-import com.alkmanistik.deferred_thread.task.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -60,7 +56,7 @@ public class TaskServiceTest {
     void scheduleTaskWithWrongClassName() {
         ScheduleTaskRequest request = new ScheduleTaskRequest();
         request.setCategory("email");
-        request.setTaskClassName("com.alkmanistik.deferred_thread.task.fdjndkfjnvdk");
+        request.setTaskClassName("com.alkmanistik.deferred_thread.task.RandomNotExistingTask");
         request.setTaskParams(Map.of(
                 "email", "erik.fattakhov.02@mail.ru",
                 "message", "Hello"

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/workers")
 @RequiredArgsConstructor
-@Tag(name = "WorkerController", description = "Взаимодейсвие с выполнителем задач")
+@Tag(name = "WorkerController", description = "Взаимодействие с выполнителем задач")
 public class WorkerController {
 
     private final WorkerManager workerManager;

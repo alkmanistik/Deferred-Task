@@ -15,8 +15,4 @@ public class RetryPolicyParam {
     private int retryCount;
     private Duration maxDelay = Duration.ofHours(10);
 
-    public RetryPolicyParam(int retryCount) {
-        this.retryCount = retryCount;
-    }
-
 }

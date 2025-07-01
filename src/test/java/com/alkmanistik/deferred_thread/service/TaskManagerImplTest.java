@@ -32,7 +32,7 @@ public class TaskManagerImplTest {
     private TaskManagerImpl taskManager;
 
     @Test
-    void scheduleSuccessful() throws Exception {
+    void scheduleSuccessful() {
 
         String category = "email";
         Class<? extends Task> taskClass = EmailProcessingTask.class;
@@ -51,7 +51,7 @@ public class TaskManagerImplTest {
     }
 
     @Test
-    void cancel() throws Exception {
+    void cancel() {
 
         String category = "email";
         long taskId = 24L;

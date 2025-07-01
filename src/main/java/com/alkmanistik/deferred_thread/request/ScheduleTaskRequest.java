@@ -24,10 +24,12 @@ public class ScheduleTaskRequest {
     @NotBlank(message = "Task class name must not be blank")
     @Schema(description = "Имя задачи", example = "com.alkmanistik.deferred_thread.task.EmailProcessingTask")
     private String taskClassName;
-    @Schema(description = "Параметры задачи", example = "{\n" +
-            "        \"email\": \"erik.fattakhov.02@mail.ru\",\n" +
-            "        \"message\": \"Hello\"\n" +
-            "    }")
+    @Schema(description = "Параметры задачи", example = """
+            {
+                    "email": "erik.fattakhov.02@mail.ru",
+                    "message": "Hello"
+            }
+            """)
     private Map<String, Object> taskParams;
     @NotNull(message = "Scheduled time must not be null")
     @Schema(description = "Запланированное время", example = "2025-06-10T22:39:39.492")

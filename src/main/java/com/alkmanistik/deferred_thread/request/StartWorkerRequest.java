@@ -14,7 +14,7 @@ import java.time.Duration;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Запрос создания выполнителя задач")
+@Schema(description = "Запрос создания выполнитель задач")
 public class StartWorkerRequest {
     @NotBlank(message = "Category must not be blank")
     @Size(max = 50, message = "Category must be less than 50 characters")
@@ -35,13 +35,13 @@ public class StartWorkerRequest {
     @Builder.Default
     @DecimalMin(value = "1.1", message = "Retry base must be at least 1.1")
     @DecimalMax(value = "10.0", message = "Retry base must not exceed 10.0")
-    @Schema(description = "y = min(a^x, maxDelay) формула экпоненциальных попыток, где a = retryBase", example = "2.718")
+    @Schema(description = "y = min(a^x, maxDelay) формула экспоненциальных попыток, где a = retryBase", example = "2.718")
     private double retryBase = Math.E; // Основание экспоненты (e ≈ 2.718 по умолчанию)
 
     @Builder.Default
     @Min(value = 1, message = "Max retry delay must be at least 1 minute")
     @Max(value = 1440, message = "Max retry delay must not exceed 1440 minutes (24 hours)")
-    @Schema(description = "y = min(a^x, maxDelay) формула экпоненциальных попыток, где maxDelay = maxRetryDelayMinutes", example = "1440")
+    @Schema(description = "y = min(a^x, maxDelay) формула экспоненциальных попыток, где maxDelay = maxRetryDelayMinutes", example = "1440")
     private int maxRetryDelayMinutes = 1440; // 24 часа по умолчанию
 
     // Метод для удобного получения Duration

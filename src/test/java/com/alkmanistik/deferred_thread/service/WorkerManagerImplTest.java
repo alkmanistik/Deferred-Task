@@ -28,7 +28,7 @@ public class WorkerManagerImplTest {
     private WorkerManagerImpl workerManager;
 
     @Test
-    void init() throws Exception {
+    void init() {
 
         WorkerParams workerParams = new WorkerParams();
         workerParams.setCategory("email");
@@ -43,7 +43,7 @@ public class WorkerManagerImplTest {
     }
 
     @Test
-    void initCategoryAlreadyExist() throws Exception {
+    void initCategoryAlreadyExist() {
 
         WorkerParams workerParams = new WorkerParams();
         workerParams.setCategory("email");
@@ -60,7 +60,7 @@ public class WorkerManagerImplTest {
     }
 
     @Test
-    void destroy() throws Exception {
+    void destroy() {
 
         WorkerParams workerParams = new WorkerParams();
         workerParams.setCategory("email");
@@ -79,7 +79,7 @@ public class WorkerManagerImplTest {
     }
 
     @Test
-    void destroyNotFound() throws Exception {
+    void destroyNotFound() {
 
         String category = "email";
 
@@ -88,7 +88,7 @@ public class WorkerManagerImplTest {
     }
 
     @Test
-    void destroyAll() throws Exception {
+    void destroyAll() {
 
         WorkerParams workerParams = new WorkerParams();
         workerParams.setCategory("email");
