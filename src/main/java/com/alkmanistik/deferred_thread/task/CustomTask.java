@@ -1,6 +1,6 @@
 package com.alkmanistik.deferred_thread.task;
 
-import com.alkmanistik.deferred_thread.data.anotation.TaskParams;
+import com.alkmanistik.deferred_thread.model.anotation.TaskParams;
 
 import java.util.Map;
 

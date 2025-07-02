@@ -1,7 +1,9 @@
-package com.alkmanistik.deferred_thread.data.model;
+package com.alkmanistik.deferred_thread.model;
 
-import com.alkmanistik.deferred_thread.data.entity.TaskEntity;
-import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.model.data.RetryPolicyParam;
+import com.alkmanistik.deferred_thread.model.data.WorkerParams;
+import com.alkmanistik.deferred_thread.model.entity.TaskEntity;
+import com.alkmanistik.deferred_thread.model.enums.TaskStatus;
 import com.alkmanistik.deferred_thread.repository.CustomTaskRepository;
 import com.alkmanistik.deferred_thread.task.Task;
 import com.fasterxml.jackson.core.type.TypeReference;

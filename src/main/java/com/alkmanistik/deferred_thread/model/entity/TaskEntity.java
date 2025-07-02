@@ -1,6 +1,6 @@
-package com.alkmanistik.deferred_thread.data.entity;
+package com.alkmanistik.deferred_thread.model.entity;
 
-import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.model.enums.TaskStatus;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;

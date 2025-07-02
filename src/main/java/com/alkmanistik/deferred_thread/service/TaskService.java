@@ -1,7 +1,7 @@
 package com.alkmanistik.deferred_thread.service;
 
-import com.alkmanistik.deferred_thread.data.anotation.TaskParams;
-import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.model.anotation.TaskParams;
+import com.alkmanistik.deferred_thread.model.enums.TaskStatus;
 import com.alkmanistik.deferred_thread.exception.TaskCancellationException;
 import com.alkmanistik.deferred_thread.exception.TaskClassNotFoundException;
 import com.alkmanistik.deferred_thread.exception.TaskParameterValidationException;

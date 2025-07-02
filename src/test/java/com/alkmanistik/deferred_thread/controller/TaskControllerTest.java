@@ -1,6 +1,6 @@
 package com.alkmanistik.deferred_thread.controller;
 
-import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.model.enums.TaskStatus;
 import com.alkmanistik.deferred_thread.request.ScheduleTaskRequest;
 import com.alkmanistik.deferred_thread.response.TaskResponse;
 import com.alkmanistik.deferred_thread.service.TaskService;

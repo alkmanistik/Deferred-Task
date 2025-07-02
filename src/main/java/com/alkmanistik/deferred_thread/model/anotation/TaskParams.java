@@ -1,4 +1,4 @@
-package com.alkmanistik.deferred_thread.data.anotation;
+package com.alkmanistik.deferred_thread.model.anotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

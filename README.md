@@ -77,9 +77,9 @@ GRAFANA_PASSWORD=/*Поменять на свой*/
 ### Структура
 ```
 ├── controller # Контроллеры API
-├── data # Все классы данных
+├── model # Все классы данных
 │ ├── entity # Сущности базы данных
-│ ├── model # Модели данных (DTO)
+│ ├── data # Дата классы
 │ ├── enums # Перечисления
 │ ├── anotation # Аннотации
 ├── exception # Кастомные исключения
@@ -94,8 +94,9 @@ GRAFANA_PASSWORD=/*Поменять на свой*/
 Пример создания своей собственной задачи
 - Обязательное наследования из Task
 - Аннотация TaskParams должна принимать только строгие параметры, которые должны быть 100%.
+
 ```java
-import com.alkmanistik.deferred_thread.data.anotation.TaskParams;
+import com.alkmanistik.deferred_thread.model.anotation.TaskParams;
 
 import java.util.Map;
 

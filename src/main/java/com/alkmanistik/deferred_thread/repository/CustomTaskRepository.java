@@ -1,7 +1,7 @@
 package com.alkmanistik.deferred_thread.repository;
 
-import com.alkmanistik.deferred_thread.data.entity.TaskEntity;
-import com.alkmanistik.deferred_thread.data.enums.TaskStatus;
+import com.alkmanistik.deferred_thread.model.entity.TaskEntity;
+import com.alkmanistik.deferred_thread.model.enums.TaskStatus;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

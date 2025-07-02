@@ -1,8 +1,8 @@
 package com.alkmanistik.deferred_thread.service;
 
-import com.alkmanistik.deferred_thread.data.model.RetryPolicyParam;
-import com.alkmanistik.deferred_thread.data.model.Worker;
-import com.alkmanistik.deferred_thread.data.model.WorkerParams;
+import com.alkmanistik.deferred_thread.model.data.RetryPolicyParam;
+import com.alkmanistik.deferred_thread.model.Worker;
+import com.alkmanistik.deferred_thread.model.data.WorkerParams;
 import com.alkmanistik.deferred_thread.exception.WorkerAlreadyExist;
 import com.alkmanistik.deferred_thread.exception.WorkerNotFound;
 import com.alkmanistik.deferred_thread.repository.CustomTaskRepository;
