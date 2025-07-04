@@ -1,4 +1,4 @@
-package com.alkmanistik.deferred_thread.response;
+package com.alkmanistik.deferred_thread.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.alkmanistik.deferred_thread.response;
+package com.alkmanistik.deferred_thread.dto.response;
 
 import com.alkmanistik.deferred_thread.model.enums.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;

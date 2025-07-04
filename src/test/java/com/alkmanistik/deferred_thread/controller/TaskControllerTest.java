@@ -1,8 +1,8 @@
 package com.alkmanistik.deferred_thread.controller;
 
 import com.alkmanistik.deferred_thread.model.enums.TaskStatus;
-import com.alkmanistik.deferred_thread.request.ScheduleTaskRequest;
-import com.alkmanistik.deferred_thread.response.TaskResponse;
+import com.alkmanistik.deferred_thread.dto.request.ScheduleTaskRequest;
+import com.alkmanistik.deferred_thread.dto.response.TaskResponse;
 import com.alkmanistik.deferred_thread.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

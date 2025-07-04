@@ -1,6 +1,6 @@
 package com.alkmanistik.deferred_thread.exception;
 
-import com.alkmanistik.deferred_thread.response.ValidationErrorResponse;
+import com.alkmanistik.deferred_thread.dto.response.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

@@ -166,7 +166,13 @@ public class Worker {
         retryTask.setRetryCount(nextRetryCount);
         retryTask.setStatus(TaskStatus.SCHEDULED);
 
-        customTaskRepository.save(retryTask);
+        Long taskId = customTaskRepository.insert(retryTask);
+        log.info(
+                "Created retry task with id={}, category={}, scheduledTime={}",
+                taskId,
+                retryTask.getCategory(),
+                retryTask.getScheduledTime()
+        );
         task.setStatus(TaskStatus.FAILED);
     }
 

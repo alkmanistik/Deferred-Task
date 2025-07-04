@@ -2,7 +2,7 @@ package com.alkmanistik.deferred_thread.controller;
 
 import com.alkmanistik.deferred_thread.model.data.RetryPolicyParam;
 import com.alkmanistik.deferred_thread.model.data.WorkerParams;
-import com.alkmanistik.deferred_thread.request.StartWorkerRequest;
+import com.alkmanistik.deferred_thread.dto.request.StartWorkerRequest;
 import com.alkmanistik.deferred_thread.service.WorkerManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

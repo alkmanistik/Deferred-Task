@@ -1,4 +1,4 @@
-package com.alkmanistik.deferred_thread.request;
+package com.alkmanistik.deferred_thread.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
