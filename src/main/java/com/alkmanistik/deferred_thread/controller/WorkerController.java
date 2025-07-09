@@ -32,13 +32,15 @@ public class WorkerController {
         WorkerParams workerParams = new WorkerParams(
                 request.getCategory(),
                 request.getThreadNumber(),
-                request.getTasksNumber()
+                request.getTasksNumber(),
+                request.getHungMinute()
         );
 
         RetryPolicyParam retryPolicy = new RetryPolicyParam(
                 request.getRetryBase(),
                 request.getRetryCount(),
-                request.getMaxRetryDelay()
+                request.getMaxRetryDelay(),
+                request.isExponentialBackoff()
         );
 
         workerManager.init(workerParams, retryPolicy);

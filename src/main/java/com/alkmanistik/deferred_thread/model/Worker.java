@@ -26,12 +26,13 @@ public class Worker {
     private ExecutorService executorService;
     private volatile boolean running;
 
+
     public Worker(WorkerParams workerParams, RetryPolicyParam retryPolicyParam, ObjectMapper objectMapper, CustomTaskRepository customTaskRepository) {
         this.workerParams = workerParams;
         this.retryPolicyParam = retryPolicyParam;
         this.objectMapper = objectMapper;
         this.customTaskRepository = customTaskRepository;
-        this.workerParams.setThreadNumber(workerParams.getThreadNumber() + 1);
+        this.workerParams.setThreadNumber(workerParams.getThreadNumber() + 2);
     }
 
     private final BlockingQueue<TaskEntity> taskQueue = new LinkedBlockingQueue<>();
@@ -42,8 +43,29 @@ public class Worker {
 
         executorService.submit(this::fetchAndQueueTasks);
 
+        executorService.submit(this::resetHungTasks);
+
         for (int i = 0; i < workerParams.getThreadNumber(); i++) {
             executorService.submit(this::processTaskFromQueue);
+        }
+    }
+
+    private void resetHungTasks() {
+        while (running) {
+            try {
+                int resetCount = customTaskRepository.resetHungTasks(
+                        workerParams.getCategory(),
+                        workerParams.getHungMinute()
+                );
+
+                if (resetCount > 0) {
+                    log.info("Сброшено {} зависших задач", resetCount);
+                }
+                Thread.sleep(300000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
     }
 
@@ -52,8 +74,6 @@ public class Worker {
             try {
                 List<TaskEntity> tasks = fetchTasks();
                 for (TaskEntity task : tasks) {
-                    task.setStatus(TaskStatus.IN_PROGRESS);
-                    customTaskRepository.save(task);
                     taskQueue.put(task);
                 }
                 Thread.sleep(1000);
@@ -95,16 +115,10 @@ public class Worker {
                 Thread.currentThread().interrupt();
             }
         }
-
-        int resetCount = customTaskRepository.resetInProgressTasks(workerParams.getCategory());
-        if (resetCount!=0){
-            log.info("Reset {} IN_PROGRESS tasks to SCHEDULED", resetCount);
-        }
     }
 
-    protected List<TaskEntity> fetchTasks() {
-        LocalDateTime now = LocalDateTime.now();
-        return customTaskRepository.findDeferred(workerParams.getCategory(), TaskStatus.SCHEDULED, now, workerParams.getTasksNumber());
+    private List<TaskEntity> fetchTasks() {
+        return customTaskRepository.findDeferred(workerParams.getCategory(), workerParams.getTasksNumber());
     }
 
     private void processTask(TaskEntity task) {
@@ -178,12 +192,17 @@ public class Worker {
 
     private Duration calculateRetryDelay(int retryAttempt) {
         // y = min(a^x, maxDelay)
-        double delaySeconds = Math.pow(retryPolicyParam.getRetryTime(), retryAttempt);
-        Duration calculatedDelay = Duration.ofSeconds((long) delaySeconds);
+        if (retryPolicyParam.isExponentialBackoff()){
+            double delaySeconds = Math.pow(retryPolicyParam.getRetryTime(), retryAttempt);
+            Duration calculatedDelay = Duration.ofSeconds((long) delaySeconds);
 
-        return calculatedDelay.compareTo(retryPolicyParam.getMaxDelay()) > 0
-                ? retryPolicyParam.getMaxDelay()
-                : calculatedDelay;
+            return calculatedDelay.compareTo(retryPolicyParam.getMaxDelay()) > 0
+                    ? retryPolicyParam.getMaxDelay()
+                    : calculatedDelay;
+        }else {
+            return Duration.ofSeconds((long) (retryPolicyParam.getRetryTime()));
+        }
+
     }
 
 }

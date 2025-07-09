@@ -33,8 +33,8 @@ public class StartWorkerRequest {
     @Schema(description = "Количество попыток на выполнение задачи", example = "3")
     private int retryCount;
     @Builder.Default
-    @DecimalMin(value = "1.1", message = "Retry base must be at least 1.1")
-    @DecimalMax(value = "10.0", message = "Retry base must not exceed 10.0")
+    @DecimalMin(value = "1.0", message = "Retry base must be at least 1.0")
+    @DecimalMax(value = "1800.0", message = "Retry base must not exceed 1800.0")
     @Schema(description = "y = min(a^x, maxDelay) формула экспоненциальных попыток, где a = retryBase", example = "2.718")
     private double retryBase = Math.E; // Основание экспоненты (e ≈ 2.718 по умолчанию)
 
@@ -44,7 +44,19 @@ public class StartWorkerRequest {
     @Schema(description = "y = min(a^x, maxDelay) формула экспоненциальных попыток, где maxDelay = maxRetryDelayMinutes", example = "1440")
     private int maxRetryDelayMinutes = 1440; // 24 часа по умолчанию
 
-    // Метод для удобного получения Duration
+    @Builder.Default
+    @Schema(description = "Флаг использования экспоненциального роста задержки между попытками. " +
+            "Если false, будет использоваться фиксированная задержка на основе retryBase",
+            example = "true")
+    private boolean exponentialBackoff = true;
+
+    @Builder.Default
+    @Min(value = 5, message = "Hung minute must be at least 5 minute")
+    @Max(value = 1440, message = "Hung minute must not exceed 1440 minutes (24 hours)")
+    @Schema(description = "Время в минутах, после которого задача считается 'зависшей' и возвращается в очередь",
+            example = "30")
+    private int hungMinute = 30;
+
     @Hidden
     public Duration getMaxRetryDelay() {
         return Duration.ofMinutes(maxRetryDelayMinutes);

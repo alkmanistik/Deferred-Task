@@ -14,5 +14,6 @@ public class RetryPolicyParam {
     private double retryTime = Math.exp(1);
     private int retryCount;
     private Duration maxDelay = Duration.ofHours(10);
+    private boolean exponentialBackoff = true;
 
 }

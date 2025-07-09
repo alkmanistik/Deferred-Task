@@ -2,14 +2,12 @@ package com.alkmanistik.deferred_thread.repository;
 
 import com.alkmanistik.deferred_thread.model.entity.TaskEntity;
 import com.alkmanistik.deferred_thread.model.enums.TaskStatus;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class CustomTaskRepository {
@@ -33,21 +31,6 @@ public class CustomTaskRepository {
                 ")";
         jdbcTemplate.execute(sql);
     }
-
-    public int resetInProgressTasks(String category) {
-        String tableName = "tasks_" + category.toLowerCase();
-        String sql = "UPDATE " + tableName +
-                " SET status = ?, updated_at = ? " +
-                "WHERE status = ?";
-
-        return jdbcTemplate.update(
-                sql,
-                TaskStatus.SCHEDULED.name(),
-                Timestamp.valueOf(LocalDateTime.now()),
-                TaskStatus.IN_PROGRESS.name()
-        );
-    }
-
 
     public long insert(TaskEntity task) {
         String tableName = "tasks_" + task.getCategory().toLowerCase();
@@ -123,48 +106,60 @@ public class CustomTaskRepository {
         }
     }
 
-    public List<TaskEntity> findDeferred(String category, TaskStatus taskStatus, LocalDateTime now, int tasksNumber) {
+    public List<TaskEntity> findDeferred(String category, int tasksNumber) {
         String tableName = "tasks_" + category.toLowerCase();
-        String sql = "SELECT * FROM " + tableName +
-                " WHERE status = ? AND scheduled_time <= ? " +
-                "ORDER BY scheduled_time ASC LIMIT ?";
+        String sql = "WITH locked_tasks AS (" +
+                "    SELECT id FROM " + tableName + " " +
+                "    WHERE status = ? AND scheduled_time <= ? " +
+                "    ORDER BY scheduled_time ASC " +
+                "    LIMIT ? FOR UPDATE SKIP LOCKED " +
+                ") " +
+                "UPDATE " + tableName + " t " +
+                "SET status = ?, updated_at = ? " +
+                "FROM locked_tasks WHERE t.id = locked_tasks.id " +
+                "RETURNING t.*";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            TaskEntity task = new TaskEntity();
-            task.setId(rs.getLong("id"));
-            task.setCategory(category);
-            task.setTaskClassName(rs.getString("task_class_name"));
-            task.setTaskParamsJson(rs.getString("task_params_json"));
-            task.setScheduledTime(rs.getTimestamp("scheduled_time").toLocalDateTime());
-            task.setStatus(TaskStatus.valueOf(rs.getString("status")));
-            task.setRetryCount(rs.getInt("retry_count"));
-            task.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-            task.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-            return task;
-        }, taskStatus.name(), Timestamp.valueOf(now), tasksNumber);
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> {
+                    TaskEntity task = new TaskEntity();
+                    task.setId(rs.getLong("id"));
+                    task.setCategory(category);
+                    task.setTaskClassName(rs.getString("task_class_name"));
+                    task.setTaskParamsJson(rs.getString("task_params_json"));
+                    task.setScheduledTime(rs.getTimestamp("scheduled_time").toLocalDateTime());
+                    task.setStatus(TaskStatus.IN_PROGRESS);
+                    task.setRetryCount(rs.getInt("retry_count"));
+                    task.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    task.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+                    return task;
+                },
+                TaskStatus.SCHEDULED.name(),
+                Timestamp.valueOf(LocalDateTime.now()),
+                tasksNumber,
+                TaskStatus.IN_PROGRESS.name(),
+                Timestamp.valueOf(LocalDateTime.now())
+        );
     }
 
-    public Optional<TaskEntity> findById(String category, long taskId) {
+    public int resetHungTasks(String category, int minute) {
         String tableName = "tasks_" + category.toLowerCase();
-        String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
 
-        try {
-            TaskEntity task = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-                TaskEntity t = new TaskEntity();
-                t.setId(rs.getLong("id"));
-                t.setCategory(category);
-                t.setTaskClassName(rs.getString("task_class_name"));
-                t.setTaskParamsJson(rs.getString("task_params_json"));
-                t.setScheduledTime(rs.getTimestamp("scheduled_time").toLocalDateTime());
-                t.setStatus(TaskStatus.valueOf(rs.getString("status")));
-                t.setRetryCount(rs.getInt("retry_count"));
-                t.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-                t.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-                return t;
-            }, taskId);
-            return Optional.ofNullable(task);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        String sql = "UPDATE " + tableName + " " +
+                "SET status = ?, updated_at = ? " +
+                "WHERE status = ? AND updated_at <= ? ";
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime threshold = now.minusMinutes(minute);
+
+
+        return jdbcTemplate.update(
+                sql,
+                TaskStatus.SCHEDULED.name(),
+                Timestamp.valueOf(now),
+                TaskStatus.IN_PROGRESS.name(),
+                Timestamp.valueOf(threshold)
+        );
+
     }
+
 }
